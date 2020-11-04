@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+  <div class="wrapper">
+    <h1 id="title"><%= htmlWebpackPlugin.options.title %></h1>
+    <noscript>JavaScript is required to use this page!</noscript>
+    <form id="options">
+      <ul class="flex-outer">
+        <li>
+          <label for="words">Words</label>
+          <textarea id="words" rows="10" cols="30" placeholder="Write all the words here"></textarea>
+        </li>
+        <li>
+          <label for="fillerLetters">Filler letters</label>
+          <input type="text" id="fillerLetters"/>
+        </li>
+        <li>
+          <label for="gridSizeX">Width</label>
+          <input type="number" id="gridSizeX" min="15" max="30" />
+        </li>
+        <li>
+          <label for="gridSizeY">Height</label>
+          <input type="number" id="gridSizeY" min="15" max="30" />  
+        </li>
+        <li>
+          <input type="button" id="triggerGenerate" value="Generate!" />
+        </li>
+      </ul>
+    </form>
+    <div id="errorMessage" class="hidden"></div>
+    <div id="results" class="hidden">
+      <table id="grid"></table>
+      <ul id="answers"></ul>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+body {
+  font-family: sans-serif;
+}
+
+div {
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.wrapper {
+  width: 700px;
+  margin: 0 auto 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.flex-outer {
+  padding: 0;
+}
+
+.flex-outer li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.flex-outer>li>label, .flex-outer li p {
+  flex: 1 0 120px;
+  max-width: 220px;
+}
+
+.flex-outer>li>label+* {
+  flex: 1 0 220px;
+}
+
+.flex-outer li button {
+  margin-left: auto;
+  padding: 8px 16px;
+  border: none;
+  background: #333;
+  color: #f2f2f2;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  border-radius: 2px;
+}
+
+#errorMessage {
+  background-color: #ffd5e1;
+  border: 2px solid red;
+}
+
+#grid {
+  width: auto;
+  margin: 20px auto;
+}
+
+#grid {
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
+
+#grid td {
+  width: 1.2em;
+  height: 1.2em;
+  text-align: center;
+}
+
+#answers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#answers li {
+  display: inline;
+  list-style: none;
+  padding: 0 10px;
+}
+
+@media print {
+  #title, #options, #errorMessage {
+    display: none;
+  }
+  .wrapper {
+    width: auto;
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .wrapper {
+    width: auto;
+    padding: 0 10px;
+  }
+}
