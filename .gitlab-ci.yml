@@ -17,28 +17,33 @@ workflow:
   - if: $CI_MERGE_REQUEST_ID
   - if: $CI_COMMIT_BRANCH == "master"
 
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-  - node_modules/
+.node-cache:
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+    - node_modules/
 
 setup-js:
   stage: setup
+  extends: .node-cache
   script:
   - npm install
 
 test-js:
   stage: test
+  extends: .node-cache
   script:
   - npm run test
 
 lint-js:
   stage: test
+  extends: .node-cache
   script:
   - npm run lint
 
 build-js:
   stage: build
+  extends: .node-cache
   script:
   - npm run build
   artifacts:
