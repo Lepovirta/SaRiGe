@@ -48,13 +48,13 @@ build-js:
   - npm run build
   artifacts:
     paths:
-    - dist
+    - www
     expire_in: 1 days
 
 pages:
   stage: publish
   script:
-  - mv dist public
+  - mv www public
   dependencies:
   - build-js
   artifacts:
