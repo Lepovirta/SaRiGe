@@ -11,10 +11,11 @@ function byId(id) {
 }
 
 export function setOptions(options) {
+  byId('words').value = options.allWords.join('\n');
   byId('fillerLetters').value = options.fillerLetters;
   byId('boardSizeWidth').value = options.boardSize.width;
   byId('boardSizeHeight').value = options.boardSize.height;
-  byId('words').value = options.allWords.join('\n');
+  byId('complexity').value = options.expectedScore * 100;
 }
 
 function getWords() {
@@ -48,6 +49,7 @@ function readOptions() {
       height: parseInt(boardSizeHeight.value),
     },
     allWords: getWords(),
+    expectedScore: byId('complexity').value / 100,
   };
 }
 
@@ -135,10 +137,8 @@ export function setup(generateBoard) {
     e.preventDefault();
     setErrorMessage();
     try {
-      showElement(byId('spinner'));
       const options = readOptions();
       const board = generateBoard(options);
-      hideElement(byId('spinner'));
       fillResults(options, board);
     } catch (err) {
       const message = err.message || err;
