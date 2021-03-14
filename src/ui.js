@@ -1,12 +1,20 @@
+function randomInteger(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function randomElement(l) {
+  return l[randomInteger(l.length)];
+}
+
 function byId(id) {
   return window.document.getElementById(id);
 }
 
 export function setOptions(options) {
   byId('fillerLetters').value = options.fillerLetters;
-  byId('gridSizeX').value = options.gridSize.x;
-  byId('gridSizeY').value = options.gridSize.y;
-  byId('words').value = options.words.join('\n');
+  byId('boardSizeWidth').value = options.boardSize.width;
+  byId('boardSizeHeight').value = options.boardSize.height;
+  byId('words').value = options.allWords.join('\n');
 }
 
 function getWords() {
@@ -18,28 +26,28 @@ function parseInt(s) {
 }
 
 function readOptions() {
-  const gridSizeX = byId('gridSizeX');
-  const gridSizeY = byId('gridSizeY');
+  const boardSizeWidth = byId('boardSizeWidth');
+  const boardSizeHeight = byId('boardSizeHeight');
 
-  if (gridSizeX.validity.typeMismatch || gridSizeY.validity.typeMismatch) {
-    throw new Error('Grid size must be provided as numbers');
+  if (boardSizeWidth.validity.typeMismatch || boardSizeHeight.validity.typeMismatch) {
+    throw new Error('Board size must be provided as numbers');
   }
 
-  if (gridSizeX.validity.rangeUnderflow || gridSizeY.validity.rangeUnderflow) {
-    throw new Error(`Grid size is too small. Min size: ${gridSizeX.min}x${gridSizeY.min}`);
+  if (boardSizeWidth.validity.rangeUnderflow || boardSizeHeight.validity.rangeUnderflow) {
+    throw new Error(`Board size is too small. Min size: ${boardSizeWidth.min}x${boardSizeHeight.min}`);
   }
 
-  if (gridSizeX.validity.rangeOverflow || gridSizeY.validity.rangeOverflow) {
-    throw new Error(`Grid size is too large. Max size: ${gridSizeX.max}x${gridSizeY.max}`);
+  if (boardSizeWidth.validity.rangeOverflow || boardSizeHeight.validity.rangeOverflow) {
+    throw new Error(`Board size is too large. Max size: ${boardSizeWidth.max}x${boardSizeHeight.max}`);
   }
 
   return {
     fillerLetters: byId('fillerLetters').value.toLowerCase(),
-    gridSize: {
-      x: parseInt(gridSizeX.value),
-      y: parseInt(gridSizeY.value),
+    boardSize: {
+      width: parseInt(boardSizeWidth.value),
+      height: parseInt(boardSizeHeight.value),
     },
-    words: getWords(),
+    allWords: getWords(),
   };
 }
 
@@ -61,16 +69,21 @@ function setErrorMessage(message) {
   }
 }
 
-function fillGrid(grid) {
-  const table = byId('grid');
+function fillBoard(options, board) {
+  const table = byId('board');
   table.innerHTML = '';
   const tbody = document.createElement('tbody');
-  grid.grid.forEach((row) => {
+  board.toRows().forEach((row) => {
     const tr = document.createElement('tr');
     tbody.appendChild(tr);
     row.forEach((column) => {
       const td = document.createElement('td');
-      td.innerText = column;
+      if (column) {
+        td.classList.add('solutionchar');
+        td.innerText = column;
+      } else {
+        td.innerText = randomElement(options.fillerLetters);
+      }
       tr.appendChild(td);
     });
   });
@@ -88,23 +101,23 @@ function fillAnswers() {
   });
 }
 
-function fillResults(grid) {
+function fillResults(options, board) {
   showElement(byId('results'));
-  fillGrid(grid);
+  fillBoard(options, board);
   fillAnswers();
 }
 
-export function setup(generateGrid) {
+export function setup(generateBoard) {
   byId('triggerGenerate').addEventListener('click', (e) => {
     e.preventDefault();
     setErrorMessage();
     try {
-      const grid = generateGrid(readOptions());
-      fillResults(grid);
-      fillGrid(grid);
-      fillAnswers();
+      const options = readOptions();
+      const board = generateBoard(options);
+      fillResults(options, board);
     } catch (err) {
       const message = err.message || err;
+      console.log(err);
       setErrorMessage(message);
     }
   });

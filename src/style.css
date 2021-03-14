@@ -52,17 +52,15 @@ div {
   border: 2px solid red;
 }
 
-#grid {
+#board {
   width: auto;
   margin: 20px auto;
-}
-
-#grid {
+  border: 1px solid black;
   font-size: 1.2em;
   text-transform: uppercase;
 }
 
-#grid td {
+#board td {
   width: 1.2em;
   height: 1.2em;
   text-align: center;
