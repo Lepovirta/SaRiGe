@@ -107,13 +107,38 @@ function fillResults(options, board) {
   fillAnswers();
 }
 
+function toggleBodyClass(show, className) {
+  if (show) {
+    document.body.classList.add(className);
+  } else {
+    document.body.classList.remove(className);
+  }
+}
+
+function toggleAdvancedControls(e) {
+  toggleBodyClass(!e.target.checked, 'hideadvanced');
+}
+
+function toggleBorders(e) {
+  toggleBodyClass(e.target.checked, 'showborders');
+}
+
+function toggleHints(e) {
+  toggleBodyClass(e.target.checked, 'showhints');
+}
+
 export function setup(generateBoard) {
+  byId('toggleAdvanced').addEventListener('change', toggleAdvancedControls);
+  byId('toggleBorders').addEventListener('change', toggleBorders);
+  byId('toggleHints').addEventListener('change', toggleHints);
   byId('triggerGenerate').addEventListener('click', (e) => {
     e.preventDefault();
     setErrorMessage();
     try {
+      showElement(byId('spinner'));
       const options = readOptions();
       const board = generateBoard(options);
+      hideElement(byId('spinner'));
       fillResults(options, board);
     } catch (err) {
       const message = err.message || err;

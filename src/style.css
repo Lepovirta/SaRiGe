@@ -2,18 +2,13 @@ body {
   font-family: sans-serif;
 }
 
-div {
-  padding: 10px;
-  margin: 10px 0;
-}
-
 .wrapper {
   width: 700px;
   margin: 0 auto 20px;
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .flex-outer {
@@ -64,6 +59,7 @@ div {
   width: 1.2em;
   height: 1.2em;
   text-align: center;
+  border: 1px solid white;
 }
 
 #answers {
@@ -78,7 +74,30 @@ div {
   padding: 0 10px;
 }
 
+/* Toggles */
+
+body.hideadvanced .advancedcontrol {
+  display: none !important;
+}
+
+body.showborders #board td {
+  border: 1px solid black;
+}
+
+body.showhints .solutionchar {
+  background-color: yellow;
+  border-color: orange !important;
+}
+
+/* Media types */
+
 @media print {
+  body {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   #title, #options, #errorMessage {
     display: none;
   }

@@ -7,7 +7,7 @@
   <script src="bundle/index.js"></script>
   <link rel="icon" href="data:,">
 </head>
-<body>
+<body class="hideadvanced">
   <div class="wrapper">
     <h1 id="title">SaRiGe - Word Search Puzzle Generator</h1>
     <noscript>JavaScript is required to use this page!</noscript>
@@ -17,24 +17,31 @@
           <label for="words">Words</label>
           <textarea id="words" rows="10" cols="30" placeholder="Write all the words here"></textarea>
         </li>
-        <li>
+        <li class="advancedcontrol">
           <label for="fillerLetters">Filler letters</label>
           <input type="text" id="fillerLetters"/>
         </li>
-        <li>
-          <label for="boardSizeWidth">Width</label>
+        <li class="advancedcontrol">
+          <label>Board size</label>
           <input type="number" id="boardSizeWidth" min="15" max="30" />
         </li>
-        <li>
+        <li class="advancedcontrol">
           <label for="boardSizeHeight">Height</label>
           <input type="number" id="boardSizeHeight" min="15" max="30" />
         </li>
-        <li>
-          <input type="button" id="triggerGenerate" value="Generate!" />
-        </li>
       </ul>
+      <div class="controls">
+        <input type="button" id="triggerGenerate" value="Generate!" />
+        <input type="checkbox" id="toggleAdvanced" autocomplete="off" />
+        <label for="toggleAdvanced">Advanced</label>
+        <input type="checkbox" id="toggleBorders" autocomplete="off" />
+        <label for="toggleBorders">Borders</label>
+        <input type="checkbox" id="toggleHints" autocomplete="off" />
+        <label for="toggleHints">Hints</label>
+      </div>
     </form>
     <div id="errorMessage" class="hidden"></div>
+    <div id="spinner" class="hidden">Generating...</div>
     <div id="results" class="hidden">
       <table id="board"></table>
       <ul id="answers"></ul>
