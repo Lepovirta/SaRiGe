@@ -1,6 +1,7 @@
 // placements = places where the words are on the board
 // max score = 1
 // lowest score = 0
+
 import * as iterators from './iterators';
 
 function directionPenalty(board, remainingWords) {
@@ -71,12 +72,72 @@ function wordDistancePenalty(board) {
 
   const maxDistance = distance({ x: 0, y: 0 }, { x: board.width, y: board.height });
   const positions = board.placements.map((p) => placementCenterPoint(p));
-  const combinations = [...iterators.combinations(positions)];
-  const distanceSum = combinations.reduce(
-    (acc, [p1, p2]) => acc + distance(p1, p2),
-    0,
-  );
-  return 1 - distanceSum / combinations.length / maxDistance;
+
+  let count = 0;
+  let distanceSum = 0;
+
+  const combinations = iterators.combinations(positions);
+  let combination = combinations.next();
+  while (!combination.done) {
+    count += 1;
+    const [p1, p2] = combination.value;
+    distanceSum += distance(p1, p2);
+    combination = combinations.next();
+  }
+
+  return 1 - distanceSum / count / maxDistance;
+}
+
+function wordNeighbourPenalty(board) {
+  if (board.placements.length === 0) {
+    return 0;
+  }
+
+  let count = 0;
+  let penalty = 0;
+
+  const combinations = iterators.combinations(board.placements);
+  let combination = combinations.next();
+  while (!combination.done) {
+    count += 1;
+    const [p1, p2] = combination.value;
+    const weight = p1.position.vertical === p2.position.vertical
+      ? 1
+      : 0.5;
+    const pos1 = p1.position.vertical ? p1.position.x : p1.position.y;
+    const pos2 = p2.position.vertical ? p2.position.x : p2.position.y;
+    penalty += (Math.abs(pos1 - pos2) === 1 ? 1 : 0) * weight;
+    combination = combinations.next();
+  }
+
+  return penalty / count;
+}
+
+function multipleWordsOnSameLinePenalty(board) {
+  if (board.placements.length === 0) {
+    return 0;
+  }
+
+  const columns = {};
+  const rows = {};
+
+  for (let i = 0; i < board.placements.length; i += 1) {
+    const placement = board.placements[i];
+    if (placement.position.vertical) {
+      columns[placement.position.x] = (columns[placement.position.x] || 0) + 1;
+    } else {
+      rows[placement.position.y] = (rows[placement.position.y] || 0) + 1;
+    }
+  }
+
+  const count = [rows, columns].map(
+    (collection) => Object.values(collection).reduce(
+      (acc, c) => acc + (c > 1 ? c : 0),
+      0,
+    ),
+  ).reduce((acc, c) => acc + c, 0);
+
+  return count / board.placements.length;
 }
 
 function between(start, n, end) {
@@ -113,13 +174,72 @@ function sharedLettersPenalty(board) {
   return 0.75;
 }
 
-export default function score(board, remainingWords) {
-  const totalWeigth = 100;
-  const penalties = [
-    directionPenalty(board, remainingWords) * 30,
-    densityPenalty(board) * 40,
-    wordDistancePenalty(board) * 20,
-    sharedLettersPenalty(board) * 10,
-  ];
-  return penalties.reduce((acc, p) => acc - p, totalWeigth) / totalWeigth;
+// All of the score penalty calculators.
+// The penalties are calculated in the list order,
+// which means that heavy-weight calculators should be
+// placed at the end of the list.
+const scoreCalculators = [
+  {
+    name: 'direction',
+    execute: directionPenalty,
+    weight: 0.2,
+  },
+  {
+    name: 'density',
+    execute: densityPenalty,
+    weight: 0.2,
+  },
+  {
+    name: 'sharedLetters',
+    execute: sharedLettersPenalty,
+    weight: 0.1,
+  },
+  {
+    name: 'multipleWordsOnSameLine',
+    execute: multipleWordsOnSameLinePenalty,
+    weight: 0.2,
+  },
+  {
+    name: 'wordNeighbour',
+    execute: wordNeighbourPenalty,
+    weight: 0.2,
+  },
+  {
+    name: 'wordDistance',
+    execute: wordDistancePenalty,
+    weight: 0.1,
+  },
+];
+
+export function calculate(expectedScore, board, remainingWords) {
+  const result = {
+    penalties: {},
+    score: 1,
+    fails: false,
+  };
+
+  for (let i = 0; i < scoreCalculators.length; i += 1) {
+    const calculator = scoreCalculators[i];
+    const penalty = calculator.execute(board, remainingWords) * calculator.weight;
+    result[calculator.name] = penalty;
+    result.score -= penalty;
+
+    if (expectedScore > result.score) {
+      // Since the penalties only substract the score,
+      // we can skip the rest of the penalty calculations
+      // after the score goes below the expected value.
+      result.fails = true;
+      break;
+    }
+  }
+
+  return result;
+}
+
+export function empty() {
+  return {
+    penalties: {},
+    score: 0,
+    fails: false,
+  };
 }

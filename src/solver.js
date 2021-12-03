@@ -1,5 +1,5 @@
 import Board from './board';
-import score from './score';
+import * as score from './score';
 
 // Fisher-Yates shuffle
 function shuffleArray(array) {
@@ -25,18 +25,18 @@ export default function solver({
     board: Board.ofSize(boardSize.width, boardSize.height),
     placements: null,
     words: shuffle ? shuffleArray([...allWords]) : allWords,
-    score: 1.0,
+    score: score.empty(),
   }];
 
   function handleStep(step) {
     // score is too low, skip the step entirely
-    if (step.score < expectedScore) {
+    if (step.score.fails) {
       return null;
     }
 
     // no words left? the board should be good enough
     if (!step.words.length) {
-      return step.board;
+      return step;
     }
 
     // split the words list
@@ -69,7 +69,7 @@ export default function solver({
     stack.push({
       board: nextBoard,
       words: remainingWords,
-      score: score(nextBoard, remainingWords),
+      score: score.calculate(expectedScore, nextBoard, remainingWords),
     });
 
     return null;
@@ -79,7 +79,7 @@ export default function solver({
     const step = stack.pop();
     const result = handleStep(step);
     if (result !== null) {
-      return result;
+      return result.board;
     }
   }
 
