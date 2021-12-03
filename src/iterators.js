@@ -1,17 +1,23 @@
-// Iterates numbers from 0 to the given end starting from the middle.
-export function* middleIterator(end) {
-  // even = start just before middle
-  // odd  = start on middle
-  const startIndex = end % 2 === 0
-    ? end / 2 - 1
-    : Math.floor(end / 2);
+// Iterates numbers from 0 to the given end in a divide and conquer manner.
+// Iteration starts from the middle and descends recursively to the
+// bottom and top half from the middle.
+export function* dcIterator(end) {
+  const stack = [[0, end - 1]];
+  while (stack.length) {
+    const [from, to] = stack.shift();
+    if (to < from) {
+      // wrap around = nop
+    } else if (to === from) {
+      yield from;
+    } else {
+      const e = to - from;
+      const middle = Math.floor(e / 2) + from;
+      yield middle;
 
-  for (let i = startIndex; i >= 0; i -= 1) {
-    const nextIndex = (i + 1) % end;
-    const prevIndex = (end - i) % end;
-    yield nextIndex;
-    if (nextIndex !== prevIndex) {
-      yield prevIndex;
+      if (e > 0) {
+        stack.push([from, middle - 1]);
+        stack.push([middle + 1, to]);
+      }
     }
   }
 }
@@ -33,6 +39,24 @@ export function* combinations(items) {
         yield [items[i], items[j]];
         hashes.add(h);
       }
+    }
+  }
+}
+
+export function* alternate(first, second) {
+  const iter1 = first();
+  const iter2 = second();
+
+  let res1 = iter1.next();
+  let res2 = iter2.next();
+  while (!(res1.done && res2.done)) {
+    if (!res1.done) {
+      yield res1.value;
+      res1 = iter1.next();
+    }
+    if (!res2.done) {
+      yield res2.value;
+      res2 = iter2.next();
     }
   }
 }

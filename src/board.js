@@ -50,41 +50,44 @@ export default class Board {
     return array2d.toRows(this);
   }
 
-  * fits(word) {
-    // Find a fit horizontally
-    {
-      const rowIterator = iterators.middleIterator(this.height);
-      let rowResult = rowIterator.next();
-      while (!rowResult.done) {
-        const columnIterator = iterators.middleIterator(this.width - word.length);
-        let columnResult = columnIterator.next();
-        while (!columnResult.done) {
-          const position = { x: columnResult.value, y: rowResult.value, vertical: false };
-          if (array2d.fits(this, { content: word, position })) {
-            yield position;
-          }
-          columnResult = columnIterator.next();
+  * fitsHorizontally(word) {
+    const rowIterator = iterators.dcIterator(this.height);
+    let rowResult = rowIterator.next();
+    while (!rowResult.done) {
+      const columnIterator = iterators.dcIterator(this.width - word.length);
+      let columnResult = columnIterator.next();
+      while (!columnResult.done) {
+        const position = { x: columnResult.value, y: rowResult.value, vertical: false };
+        if (array2d.fits(this, { content: word, position })) {
+          yield position;
         }
-        rowResult = rowIterator.next();
+        columnResult = columnIterator.next();
       }
+      rowResult = rowIterator.next();
     }
+  }
 
-    // Find a fit vertically
-    {
-      const rowIterator = iterators.middleIterator(this.width);
-      let rowResult = rowIterator.next();
-      while (!rowResult.done) {
-        const columnIterator = iterators.middleIterator(this.width - word.length);
-        let columnResult = columnIterator.next();
-        while (!columnResult.done) {
-          const position = { x: rowResult.value, y: columnResult.value, vertical: true };
-          if (array2d.fits(this, { content: word, position })) {
-            yield position;
-          }
-          columnResult = columnIterator.next();
+  * fitsVertically(word) {
+    const rowIterator = iterators.dcIterator(this.width);
+    let rowResult = rowIterator.next();
+    while (!rowResult.done) {
+      const columnIterator = iterators.dcIterator(this.width - word.length);
+      let columnResult = columnIterator.next();
+      while (!columnResult.done) {
+        const position = { x: rowResult.value, y: columnResult.value, vertical: true };
+        if (array2d.fits(this, { content: word, position })) {
+          yield position;
         }
-        rowResult = rowIterator.next();
+        columnResult = columnIterator.next();
       }
+      rowResult = rowIterator.next();
     }
+  }
+
+  * fits(word) {
+    yield* iterators.alternate(
+      () => this.fitsHorizontally(word),
+      () => this.fitsVertically(word),
+    );
   }
 }
