@@ -83,7 +83,7 @@ const testData = [
   ],
 ];
 
-test.each(testData)('inserting content to array: %s', (name, destination, source, expectation) => {
+test.each(testData)('inserting content into array: %s', (name, destination, source, expectation) => {
   const copiedDest = { ...destination, array: [...destination.array] };
 
   array2d.insert(copiedDest, source);
@@ -91,10 +91,30 @@ test.each(testData)('inserting content to array: %s', (name, destination, source
   expect(copiedDest.array).toEqual(expectation);
 });
 
-test.each(testData)('content fits to array: %s', (name, destination, source) => {
+test.each(testData)('content fits into array: %s', (name, destination, source) => {
   const result = array2d.fits(destination, source);
 
   expect(result).toBe(true);
+});
+
+test('content does not fit into array', () => {
+  const destination = {
+    array: [
+      '-', '-', '-', '-', '-', '-', '-', '-', '-', '-',
+      'r', '-', 'c', 'o', 'u', 'r', 'a', 'g', 'e', '-',
+      '-', '-', '-', '-', '-', '-', '-', '-', '-', '-',
+    ],
+    width: 10,
+    height: 3,
+    placeholder: '-',
+  };
+  const source = {
+    content: 'age',
+    position: { x: 6, y: 1, vertical: false },
+  };
+  const result = array2d.fits(destination, source);
+
+  expect(result).toBe(false);
 });
 
 const positionIteratorTestData = [
