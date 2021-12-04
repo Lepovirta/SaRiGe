@@ -47,6 +47,10 @@ body {
   border: 2px solid red;
 }
 
+#loadingMessage {
+  color: #888;
+}
+
 #board {
   width: auto;
   margin: 20px auto;

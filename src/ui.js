@@ -134,6 +134,7 @@ function toggleLowerCase(e) {
 }
 
 export function setup(generateBoard) {
+  const loadingMessage = byId('loadingMessage');
   byId('toggleAdvanced').addEventListener('change', toggleAdvancedControls);
   byId('toggleBorders').addEventListener('change', toggleBorders);
   byId('toggleHints').addEventListener('change', toggleHints);
@@ -141,14 +142,19 @@ export function setup(generateBoard) {
   byId('triggerGenerate').addEventListener('click', (e) => {
     e.preventDefault();
     setErrorMessage();
-    try {
-      const options = readOptions();
-      const board = generateBoard(options);
-      fillResults(options, board);
-    } catch (err) {
-      const message = err.message || err;
-      console.log(err);
-      setErrorMessage(message);
-    }
+    showElement(loadingMessage);
+    setTimeout(() => {
+      try {
+        const options = readOptions();
+        const board = generateBoard(options);
+        fillResults(options, board);
+      } catch (err) {
+        const message = err.message || err;
+        console.log(err);
+        setErrorMessage(message);
+      } finally {
+        hideElement(loadingMessage);
+      }
+    }, 0);
   });
 }
