@@ -1,27 +1,7 @@
 import './style.css';
 import solver from './solver';
 import * as ui from './ui';
-
-const defaultOptions = {
-  fillerLetters: 'abcdefghijklmnopqrstuvwxyz',
-  allWords: [
-    'gate',
-    'message',
-    'courage',
-    'desk',
-    'lamp',
-    'vehicle',
-    'beer',
-    'speaker',
-    'bread',
-    'guitar',
-    'machine',
-    'computer',
-  ],
-  boardSize: { width: 15, height: 15 },
-  shuffle: true,
-  expectedScore: 0.8,
-};
+import defaultOptions from './defaults';
 
 function generateBoard(options) {
   const board = solver(options);
