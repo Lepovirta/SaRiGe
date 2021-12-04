@@ -28,7 +28,6 @@ test.each(testData)('board can be filled with words', (words, boardSize) => {
     const word = words[i];
     const position = board.fits(word);
     if (position === null) {
-      console.log(board.toAscii());
       fail(`Failed to add word #${i}: ${word}`);
       return;
     }

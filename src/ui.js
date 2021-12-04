@@ -150,8 +150,8 @@ export function setup(generateBoard) {
         fillResults(options, board);
       } catch (err) {
         const message = err.message || err;
-        console.log(err);
         setErrorMessage(message);
+        throw err;
       } finally {
         hideElement(loadingMessage);
       }
