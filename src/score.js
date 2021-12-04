@@ -4,6 +4,8 @@
 
 import * as iterators from './iterators';
 
+// Compares the ratio of words arranged in different directions.
+// The less balanced the ratio is the more penalty is involved.
 function directionPenalty(board, remainingWords) {
   if (board.placements.length === 0) {
     return 0;
@@ -23,17 +25,22 @@ function placementCenterPoint(placement) {
     : { x: placement.position.x + wordCenter, y: placement.position.y };
 }
 
+// Distance between two points.
 function distance(p1, p2) {
   return Math.sqrt(
     (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2,
   );
 }
 
+// Calculate how densely words are packed in a board.
+// More density = more penalty.
+// This is to ensure that words are spread around the board as wide as possible.
 function densityPenalty(board) {
   if (board.placements.length <= 1) {
     return 0;
   }
 
+  // Get the outermost points of the words from the center of the board.
   const corners = board.placements.reduce(
     (acc, placement) => {
       const point = placementCenterPoint(placement);
@@ -50,13 +57,15 @@ function densityPenalty(board) {
 
   const maxDistance = distance({ x: 0, y: 0 }, { x: board.width, y: board.height });
 
+  // Calculate the distances between board corners and outermost points,
+  // and take average of them. The higher the average distance, the more
+  // density there is, which means more penalty.
   const comparisonPoints = [
     [{ x: 0, y: 0 }, corners.min],
     [{ x: board.width, y: board.height }, corners.max],
     [{ x: 0, y: board.height }, { x: corners.min.x, y: corners.max.y }],
     [{ x: board.width, y: 0 }, { x: corners.max.x, y: corners.min.y }],
   ];
-
   const avgDistance = comparisonPoints.reduce(
     (acc, [p1, p2]) => acc + distance(p1, p2),
     0,
@@ -65,6 +74,13 @@ function densityPenalty(board) {
   return avgDistance / maxDistance;
 }
 
+// Calculate how far apart words on the board are from each other.
+// Less distance = more penalty.
+// This is to ensure that words are spread around the board as wide as possible.
+//
+// Since this requires comparing each word to each other, this is more compute
+// intensive compared to the other penalty calculators. For this reason, this
+// calculator should be used as the last one.
 function wordDistancePenalty(board) {
   if (board.placements.length <= 3) {
     return 0;
@@ -85,9 +101,17 @@ function wordDistancePenalty(board) {
     combination = combinations.next();
   }
 
-  return 1 - distanceSum / count / maxDistance;
+  const avgDistance = distanceSum / count;
+  return 1 - avgDistance / maxDistance;
 }
 
+// Calculate the number of "neighbours" each word on the board has.
+// A neighbour = a word that's placed on the next row/column to another word.
+// More neighbours found = more penalty.
+//
+// Since this requires comparing each word to each other, this is more compute
+// intensive compared to the other penalty calculators. For this reason, this
+// calculator should be used as the last one.
 function wordNeighbourPenalty(board) {
   if (board.placements.length === 0) {
     return 0;
@@ -113,6 +137,8 @@ function wordNeighbourPenalty(board) {
   return penalty / count;
 }
 
+// Calculate the number of words each row and column have on the board.
+// The more words on the same row/column = more penalty.
 function multipleWordsOnSameLinePenalty(board) {
   if (board.placements.length === 0) {
     return 0;
@@ -137,13 +163,24 @@ function multipleWordsOnSameLinePenalty(board) {
     ),
   ).reduce((acc, c) => acc + c, 0);
 
-  return count / board.placements.length;
+  // Max penalty reached when more than half of the words share rows/columns.
+  const max = board.placements.length / 2;
+  return Math.min(count / max, 1);
 }
 
+// Check if `n` is between `start` and `end`.
 function between(start, n, end) {
   return n >= start && n <= end;
 }
 
+// Calculate the number of shared letters on the board.
+//
+// Penalty is based on the percentage of words that use shared letters:
+//  0 -  25% = 50% penalty
+// 25 -  45% = 25% penalty
+// 45 -  65% =  0% penalty
+// 65 -  85% = 25% penalty
+// 85 - 100% = 50% penalty
 function sharedLettersPenalty(board) {
   if (board.placements.length <= 3) {
     return 0;
@@ -178,6 +215,10 @@ function sharedLettersPenalty(board) {
 // The penalties are calculated in the list order,
 // which means that heavy-weight calculators should be
 // placed at the end of the list.
+//
+// The weight is used for balancing the impact of the
+// penalties between each other. The total weight must
+// equal to 1.0.
 const scoreCalculators = [
   {
     name: 'direction',
@@ -192,7 +233,7 @@ const scoreCalculators = [
   {
     name: 'sharedLetters',
     execute: sharedLettersPenalty,
-    weight: 0.1,
+    weight: 0.2,
   },
   {
     name: 'multipleWordsOnSameLine',
@@ -202,7 +243,7 @@ const scoreCalculators = [
   {
     name: 'wordNeighbour',
     execute: wordNeighbourPenalty,
-    weight: 0.2,
+    weight: 0.1,
   },
   {
     name: 'wordDistance',
@@ -211,6 +252,9 @@ const scoreCalculators = [
   },
 ];
 
+// Calculate the total score for the board and remaining words,
+// and compare it to the expected score. The score calculation
+// ends early, if it goes below the expected score.
 export function calculate(expectedScore, board, remainingWords) {
   const result = {
     penalties: {},
@@ -220,8 +264,10 @@ export function calculate(expectedScore, board, remainingWords) {
 
   for (let i = 0; i < scoreCalculators.length; i += 1) {
     const calculator = scoreCalculators[i];
-    const penalty = calculator.execute(board, remainingWords) * calculator.weight;
-    result[calculator.name] = penalty;
+    const penalty = calculator.weight === 0
+      ? 0
+      : calculator.execute(board, remainingWords) * calculator.weight;
+    result.penalties[calculator.name] = penalty;
     result.score -= penalty;
 
     if (expectedScore > result.score) {
@@ -236,6 +282,7 @@ export function calculate(expectedScore, board, remainingWords) {
   return result;
 }
 
+// Empty score recording. Used as a placeholder value.
 export function empty() {
   return {
     penalties: {},
