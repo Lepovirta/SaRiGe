@@ -71,6 +71,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  text-transform: uppercase;
 }
 
 #answers li {
@@ -95,6 +96,10 @@ body.showhints .solutionchar {
 }
 
 body.uselowercase #board {
+  text-transform: lowercase;
+}
+
+body.uselowercase #answers {
   text-transform: lowercase;
 }
 
