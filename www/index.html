@@ -14,36 +14,65 @@
     <form id="options">
       <ul class="flex-outer">
         <li>
-          <label for="words">Words</label>
+          <label for="words" title="Words to use in the board. Separate by spaces or new lines.">
+            Words
+          </label>
           <textarea id="words" rows="10" cols="30" placeholder="Write all the words here"></textarea>
         </li>
         <li class="advancedcontrol">
-          <label for="fillerLetters">Filler letters</label>
+          <label for="fillerLetters" title="Letters to use for filling the board after placing the words.">
+            Filler letters
+          </label>
           <input type="text" id="fillerLetters"/>
         </li>
         <li class="advancedcontrol">
-          <label>Board size</label>
+          <label for="boardSizeWidth" title="Width of the board">
+            Width
+          </label>
           <input type="number" id="boardSizeWidth" min="15" max="30" />
         </li>
         <li class="advancedcontrol">
-          <label for="boardSizeHeight">Height</label>
+          <label for="boardSizeHeight" title="Height of the board">
+            Height
+          </label>
           <input type="number" id="boardSizeHeight" min="15" max="30" />
         </li>
         <li class="advancedcontrol">
-          <label for="complexity">Complexity</label>
+          <label for="complexity" title="How complicated the word placement should be">
+            Complexity
+          </label>
           <input type="range" id="complexity" min="0" max="80" value="80" />
         </li>
       </ul>
       <div class="controls">
-        <input type="button" id="triggerGenerate" value="Generate!" />
+        <input
+          type="button"
+          id="triggerGenerate"
+          title="Generate a new board with the selected words"
+          value="Generate!"
+        />
+        <input
+          type="button"
+          title="Print this page"
+          onclick="window.print()"
+          value="Print"
+        />
         <input type="checkbox" id="toggleAdvanced" autocomplete="off" />
-        <label for="toggleAdvanced">Advanced</label>
+        <label for="toggleAdvanced" title="Show the advanced settings">
+          Advanced
+        </label>
         <input type="checkbox" id="toggleBorders" autocomplete="off" />
-        <label for="toggleBorders">Borders</label>
+        <label for="toggleBorders" title="Show borders around letters">
+          Borders
+        </label>
         <input type="checkbox" id="toggleHints" autocomplete="off" />
-        <label for="toggleHints">Hints</label>
+        <label for="toggleHints" title="Show where all of the words are placed on the board">
+          Solution
+        </label>
         <input type="checkbox" id="toggleLowerCase" autocomplete="off" />
-        <label for="toggleLowerCase">Lower case</label>
+        <label for="toggleLowerCase" title="Use lower case letters instead of upper case letters in the board">
+          Lower case
+        </label>
         <span id="loadingMessage" class="hidden">Generating...</span>
       </div>
     </form>
