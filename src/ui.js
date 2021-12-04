@@ -129,10 +129,15 @@ function toggleHints(e) {
   toggleBodyClass(e.target.checked, 'showhints');
 }
 
+function toggleLowerCase(e) {
+  toggleBodyClass(e.target.checked, 'uselowercase');
+}
+
 export function setup(generateBoard) {
   byId('toggleAdvanced').addEventListener('change', toggleAdvancedControls);
   byId('toggleBorders').addEventListener('change', toggleBorders);
   byId('toggleHints').addEventListener('change', toggleHints);
+  byId('toggleLowerCase').addEventListener('change', toggleLowerCase);
   byId('triggerGenerate').addEventListener('click', (e) => {
     e.preventDefault();
     setErrorMessage();

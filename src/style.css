@@ -89,6 +89,10 @@ body.showhints .solutionchar {
   border-color: orange !important;
 }
 
+body.uselowercase #board {
+  text-transform: lowercase;
+}
+
 /* Media types */
 
 @media print {
