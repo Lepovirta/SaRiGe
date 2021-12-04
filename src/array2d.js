@@ -61,7 +61,7 @@ export function fits(
 ) {
   const maxSize = width * height;
   const getIndex = relativePositionToIndex(width, position);
-  let overlap = 0;
+  let previouslyOverlapped = false;
 
   for (let i = 0; i < content.length; i += 1) {
     const index = getIndex(i);
@@ -73,20 +73,19 @@ export function fits(
 
     // check character used in the array at index
     if (array[index] === placeholder) {
-      // character = placeholder => nop
+      previouslyOverlapped = false;
     } else if (array[index] === content[i]) {
-      overlap += 1;
+      // If the content overlaps with array characters more than once in a row,
+      // then there's a chance that the content would get fully or partially hidden
+      // by existing content. This would make it really or even impossible to later
+      // distinguish the content in the array, which is why it must be rejected.
+      if (previouslyOverlapped) {
+        return false;
+      }
+      previouslyOverlapped = true;
     } else {
       return false;
     }
-  }
-
-  // If there's more or equal amount of overlap compared to characters in content,
-  // then the content would be "hidden" within another earlier content.
-  // This would make it impossible to later distinguish the content in the array,
-  // which is why it must be rejected.
-  if (overlap >= content.length) {
-    return false;
   }
 
   return true;
