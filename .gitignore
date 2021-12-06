@@ -1,2 +1,5 @@
 node_modules/
 www/bundle/
+test-report.xml
+coverage/
+junit.xml

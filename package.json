@@ -8,7 +8,7 @@
     "build": "esbuild src/index.js --bundle --outfile=www/bundle/index.js",
     "serve": "esbuild src/index.js --bundle --outfile=www/bundle/index.js --servedir=www",
     "lint": "eslint src/*.js",
-    "test": "jest",
+    "test": "jest --coverage",
     "demo": "node -r esm demo.js"
   },
   "author": "Jaakko Pallari",
@@ -20,6 +20,8 @@
     "eslint-plugin-import": "^2.25.3",
     "esm": "^3.2.25",
     "jest": "^27.4.3",
-    "jest-esm-transformer": "^1.0.0"
+    "jest-esm-transformer": "^1.0.0",
+    "jest-junit": "^13.0.0",
+    "jest-sonar-reporter": "^2.0.0"
   }
 }

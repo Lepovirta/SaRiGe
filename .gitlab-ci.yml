@@ -9,6 +9,7 @@ image: node:16
 stages:
 - setup
 - test
+- test-report
 - build
 - publish
 
@@ -38,6 +39,14 @@ test-js:
   extends: .node-cache
   script:
   - npm run test
+  artifacts:
+    paths:
+    - coverage
+    - test-report.xml
+    - junit.xml
+    expire_in: 1 days
+    reports:
+      cobertura: coverage/cobertura-coverage.xml
 
 lint-js:
   stage: test
@@ -46,7 +55,7 @@ lint-js:
   - npm run lint
 
 sonarcloud-check:
-  stage: test
+  stage: test-report
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
